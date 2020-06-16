@@ -1,4 +1,4 @@
-from flask import render_template,flash,redirect
+from flask import render_template,flash,redirect,url_for
 from app import app
 from app.forms import LoginForm
 
@@ -34,7 +34,7 @@ def login():
             form.username.data, form.remember_me.data))
         '''flash - фласк сохраняет сообщение, но на веб серверах не
         будут появляться сообщения'''
-        return redirect('/index')
+        return redirect(url_for('index'))
     '''функция указывает веб браузеру клиента автоматически
     перейти на другую страницу, указанную в качестве аргумента(/index)'''
     return render_template('login.html',title = 'Sign In',form = form)
