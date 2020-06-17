@@ -12,4 +12,4 @@ db = SQLAlchemy(app)#объект db представляет БД
 migrate = Migrate(app,db)#объект, который представит механизм миграции
 
 
-from app import routes
+from app import routes,models
