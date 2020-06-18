@@ -1,12 +1,14 @@
-from flask import render_template,flash,redirect,url_for
+from flask import render_template,flash,redirect,url_for,request
 from app import app
 from app.forms import LoginForm
 from flask_login import current_user,login_user,logout_user,login_required
 from app.models import User
+from werkzeug.urls import url_parse
 
 @app.route('/')
 @app.route('/index')
-@login_required#функция становится защищенной и не разрешает доступ к пользователям, которые не аутентифицированны
+@login_required#функция становится защищенной и не разрешает доступ к пользователям, которые не
+# аутентифицированны
 def index():
     user = {'username': 'Эльдар Рязанов'}
     posts = [
@@ -23,7 +25,7 @@ def index():
             'body': 'Какая гадость эта ваша заливная рыба!!'
         }
     ]
-    return render_template('index.html', title='Home', user=user, posts=posts)
+    return render_template('index.html', title='Home', posts=posts)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -34,7 +36,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first
+        user = User.query.filter_by(username=form.username.data).first()
         '''результат функции filter_by- это запрос, который включает только объекты, у которых есть совпадающее
         имя польователя.Поскольку известно, что будет только один или нулевой результат,я завершу запрос,
         вызвав first(), который вернет объект пользователя,если он существует или None'''
@@ -47,7 +49,10 @@ def login():
         '''функция будет регестрировать пользователя во время входа в систему, поэтому это означает, что
         на любых будущих страницах, к которым пользователь переходит, будет установлена переменная 
         current_user для этого пользователя'''
-        return redirect(url_for('index'))
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page=url_for('idex')
+        return redirect(next_page)
     return render_template('login.html',title = 'Sign In',form = form)
 
 @app.route('/logout')
