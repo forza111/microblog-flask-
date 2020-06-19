@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired,ValidationError,DataRequired,Email,EqualTo
+from wtforms.validators import ValidationError,DataRequired,Email,EqualTo
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -14,9 +14,11 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',validators=[DataRequired()])
-    email = StringField('Email',validators=[DataRequired()],Email())
+    email = StringField('Email',validators=[DataRequired(),Email()])
+    '''Валидатор Email - гарантирует, что то, что пользователь вводит в этом поле точно Email '''
     password = PasswordField('Password',validators=[DataRequired()])
     password2=PasswordField('Repeat Password',validators=[DataRequired(),EqualTo('password')])
+    '''Валидатор EqualTo проверяет что значение второго пароля идентично значению первого пароля'''
     submit = SubmitField('Register')
 
     def validate_username(self,username):
@@ -28,3 +30,9 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email addres')
+
+    '''В этом случае я хочу убедиться, что имя пользователя и адрес электронной почты, введенные 
+    пользователем, еще не находятся в базе данных, поэтому эти два метода выдают запросы к базе 
+    данных, ожидая, что результатов не будет. В случае, если результат существует, ошибка проверки 
+    инициируется вызовом ValidationError. Сообщение, включенное в качестве аргумента в исключение, 
+    будет сообщением, которое будет отображаться рядом с полем для просмотра пользователем.'''
