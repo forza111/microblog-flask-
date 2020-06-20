@@ -36,7 +36,7 @@ class User(UserMixin,db.Model):
         return check_password_hash(self.password_hash,password)
 
     def avatar(self,size):
-        digest=md5(self.email.lower().encode('utf-8')).hexdigest()
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest,size)
     '''Метод аватар возвращает URL-адрес изображения пользователя,масштабируется до требуемого размера
     в пикселях.Для пользователей, у которых нет зарегистрированного аватара, будет создано изображение 
