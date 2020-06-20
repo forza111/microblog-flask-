@@ -95,6 +95,7 @@ def register():
 @login_required
 def user(username):
     user = User.query.filter_by(username = username).first_or_404()
+    """first_or_404() работает так же как first, но если при отсутсвтии результатов возвращает ошибку 404"""
     posts = [
         {'author' : user, 'body' : 'Test post #1'},
         {'author': user, 'body': 'Test post #2'}
