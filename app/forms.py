@@ -37,7 +37,7 @@ class RegistrationForm(FlaskForm):
     инициируется вызовом ValidationError. Сообщение, включенное в качестве аргумента в исключение, 
     будет сообщением, которое будет отображаться рядом с полем для просмотра пользователем.'''
 
-class EditProfile(FlaskForm):
+class EditProfileForm(FlaskForm):
     username = StringField("Username",validators=[DataRequired()])
     about_me = TextAreaField('About_me',validators=[Length(min=0, max=140)])
     submit = SubmitField('Submit')
