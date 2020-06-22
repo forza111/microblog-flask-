@@ -13,7 +13,6 @@ class User(UserMixin,db.Model):
     Класс определяет несколько полей как экземпляры классы db.Column, который принимает
     тип поля в качестве аргумента + необязательный аргументы, которые позволяют указать
     какие поля уникальны и проиндексированы'''
-
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     '''retationship - высокоуровневое представление о взаимоотношениях между users и posts.
 
@@ -24,6 +23,9 @@ class User(UserMixin,db.Model):
     Первый аргумент - Post указывает класс, который представляет сторону отношений "много"
     backref - определяет имя поля, которое будет добавлено
     lazy - определяет как будет выполняться запрос БД для связи'''
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime, default = datetime.utcnow)
+
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -43,6 +45,8 @@ class User(UserMixin,db.Model):
     «идентификатор». Чтобы сгенерировать хэш MD5, я конвертирую адрес электронной почты в нижний регистр, 
     поскольку этого требует Gravatar. Затем, конвертирую полученный hash-объект в шестнадцатеричную строку 
     (метод .hexdigest()), прежде чем передавать ее хэш-функции.'''
+
+
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)
