@@ -4,6 +4,19 @@ from app.forms import LoginForm,RegistrationForm
 from flask_login import current_user,login_user,logout_user,login_required
 from app.models import User
 from werkzeug.urls import url_parse
+from datetime import datetime
+
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
+"""декоратор before_request регистрирует декорированную функцию, которая должна быть выполнена 
+непосредственно перед функцией просмотра.Это очень полезно, потому что теперь я могу вставить код, 
+который я хочу выполнить перед любой функцией просмотра в приложении, и я могу использовать его в 
+одном месте. Реализация просто проверяет, зарегистрирован ли current_user, и в этом случае устанавливает 
+последнее поле в текущее время"""
 
 @app.route('/')
 @app.route('/index')
@@ -90,3 +103,14 @@ def register():
     электронной почтой и паролем, записывает их в базу данных и затем перенаправляет запрос на вход, чтобы 
     пользователь мог войти в систему.'''
     return render_template('register.html',title = 'Register',form=form)
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username = username).first_or_404()
+    """first_or_404() работает так же как first, но если при отсутсвтии результатов возвращает ошибку 404"""
+    posts = [
+        {'author' : user, 'body' : 'Test post #1'},
+        {'author': user, 'body': 'Test post #2'}
+    ]
+    return render_template('user.html', user = user, posts = posts)

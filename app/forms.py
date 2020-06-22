@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import ValidationError,DataRequired,Email,EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField,TextAreaField
+from wtforms.validators import ValidationError,DataRequired,Email,EqualTo,Length
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -36,3 +36,10 @@ class RegistrationForm(FlaskForm):
     данных, ожидая, что результатов не будет. В случае, если результат существует, ошибка проверки 
     инициируется вызовом ValidationError. Сообщение, включенное в качестве аргумента в исключение, 
     будет сообщением, которое будет отображаться рядом с полем для просмотра пользователем.'''
+
+class EditProfile(FlaskForm):
+    username = StringField("Username",validators=[DataRequired()])
+    about_me = TextAreaField('About_me',validators=[Length(min=0, max=140)])
+    submit = SubmitField('Submit')
+    '''тип поля TextAreaField представляет собой многострочное поле, в котором пользователь может вводить текст.
+    Валидатор lenght проверяет, чтобы текст  находился между 0 и 140 символами '''
