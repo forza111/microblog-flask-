@@ -8,8 +8,8 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
-    '''первый аргумент выступает как метка(описание)'''
-    '''Validators используется для привязки к полям.DataRequired проверяет
+    '''первый аргумент выступает как метка(описание)
+    Validators используется для привязки к полям.DataRequired проверяет
     что поле не было отправлено пустым'''
 
 class RegistrationForm(FlaskForm):
