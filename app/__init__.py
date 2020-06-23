@@ -17,4 +17,4 @@ login.login_view = 'login'
 '''значение login-является именем функции(конечной точкой) для входа в систему. Другими словами имя,
 которое вы будете использовать в вызове url_for, чтобы получить url'''
 
-from app import routes,models
+from app import routes,models,errors
