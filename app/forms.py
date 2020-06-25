@@ -43,3 +43,17 @@ class EditProfileForm(FlaskForm):
     submit = SubmitField('Submit')
     '''тип поля TextAreaField представляет собой многострочное поле, в котором пользователь может вводить текст.
     Валидатор lenght проверяет, чтобы текст  находился между 0 и 140 символами '''
+
+    def __init__(self,original_username, *args,**kwargs):
+        super(EditProfileForm, self).__init__(*args,**kwargs)
+        self.original_username = original_username
+
+    def validate_username(self, username):
+        if username.data != self.original_username:
+            user = User.query.filter_by(username = self.username.data).first()
+            if user is not None:
+                raise ValidationError('Please use a different username')
+    '''функция super в конструкторе класса, который принимает исходное имя пользователя в качестве аргумента. 
+    Это имя пользователя сохраняется как переменная экземпляра и проверяется в методе validate_username(). 
+    Если имя пользователя, введенное в форму, совпадает с исходным именем пользователя, то нет причин проверять 
+    базу данных на наличие дубликатов.'''
