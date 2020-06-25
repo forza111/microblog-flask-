@@ -4,6 +4,11 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import UserMixin
 from hashlib import md5
 
+followers = db.Table('followers',
+                     db.Column('follower_id',db.Integer,db.ForeignKey('user.id')),
+                     db.Column('followed_id',db.Integer,db.ForeignKey('user.id'))
+                     )
+
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(64), index = True, unique = True)
@@ -25,6 +30,36 @@ class User(UserMixin,db.Model):
     lazy - определяет как будет выполняться запрос БД для связи'''
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default = datetime.utcnow)
+
+    followed = db.relationship(
+        'User',secondary = followers,
+        primaryjoin = (followers.c.follower_id == id),
+        secondaryjoin = (followers.c.followed_id == id),
+        backref = db.backref('followers', lazy = 'dydamic'),lazy = 'dynamic')
+    """c — это атрибут таблиц SQLAlchemy, которые не определены как модели. Для этих таблиц столбцы таблицы отображаются 
+    как субатрибуты этого атрибута «c».
+    
+    *User' — это правая сторона связи (левая сторона — это родительский класс). Поскольку это самореферентное отношение, 
+    я должен использовать тот же класс с обеих сторон.
+    
+    *secondary кофигурирует таблицу ассоциаций, которая используется для этой связи, которую я определил прямо над этим 
+    классом
+    
+    primaryjoin указывает условие, которое связывает объект левой стороны (follower user) с таблицей ассоциаций. Условием 
+    объединения для левой стороны связи является идентификатор пользователя, соответствующий полю follower_id таблицы 
+    ассоциаций. Выражение followers.c.follower_id ссылается на столбец follower_id таблицы ассоциаций.
+    
+    secondaryjoin определяет условие, которое связывает объект правой стороны (followed user) с таблицей ассоциаций. 
+    Это условие похоже на primaryjoin, с той лишь разницей, что теперь я использую followed_id, который является другим 
+    внешним ключом в таблице ассоциаций.
+    
+    backref определяет, как эта связь будет доступна из правой части объекта. С левой стороны отношения пользователи 
+    называются followed, поэтому с правой стороны я буду использовать имя followers, чтобы представить всех пользователей 
+    левой стороны, которые связаны с целевым пользователем в правой части. Дополнительный lazy аргумент указывает режим 
+    выполнения этого запроса. Режим dynamic настройки запроса не позволяет запускаться до тех пор, пока не будет выполнен 
+    конкретный запрос, что также связано с тем, как установлено отношения «один ко многим».
+    
+    -lazy похож на параметр с тем же именем в backref, но этот относится к левой, а не к правой стороне."""
 
 
     def __repr__(self):

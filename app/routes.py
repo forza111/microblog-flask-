@@ -119,7 +119,7 @@ def user(username):
 @login_required
 def edit_profile():
     form = EditProfileForm(current_user.username)
-    '''дубликаты в форме профиля редактирования будут предотвращены в большинстве случаев.''''
+    '''дубликаты в форме профиля редактирования будут предотвращены в большинстве случаев.'''
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
