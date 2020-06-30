@@ -38,7 +38,7 @@ class RegistrationForm(FlaskForm):
     будет сообщением, которое будет отображаться рядом с полем для просмотра пользователем.'''
 
 class EditProfileForm(FlaskForm):
-    username = StringField("Username",validators=[DataRequired()])
+    username = StringField('Username',validators=[DataRequired()])
     about_me = TextAreaField('About_me',validators=[Length(min=0, max=140)])
     submit = SubmitField('Submit')
     '''тип поля TextAreaField представляет собой многострочное поле, в котором пользователь может вводить текст.

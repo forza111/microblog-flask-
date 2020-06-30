@@ -5,8 +5,8 @@ from flask_login import UserMixin
 from hashlib import md5
 
 followers = db.Table('followers',
-                     db.Column('follower_id',db.Integer,db.ForeignKey('user.id')),
-                     db.Column('followed_id',db.Integer,db.ForeignKey('user.id'))
+    db.Column('follower_id',db.Integer,db.ForeignKey('user.id')),
+    db.Column('followed_id',db.Integer,db.ForeignKey('user.id'))
                      )
 
 class User(UserMixin,db.Model):
@@ -32,10 +32,10 @@ class User(UserMixin,db.Model):
     last_seen = db.Column(db.DateTime, default = datetime.utcnow)
 
     followed = db.relationship(
-        'User',secondary = followers,
+        'User', secondary = followers,
         primaryjoin = (followers.c.follower_id == id),
         secondaryjoin = (followers.c.followed_id == id),
-        backref = db.backref('followers', lazy = 'dydamic'),lazy = 'dynamic')
+        backref = db.backref('followers', lazy = 'dynamic'),lazy = 'dynamic')
     """c — это атрибут таблиц SQLAlchemy, которые не определены как модели. Для этих таблиц столбцы таблицы отображаются 
     как субатрибуты этого атрибута «c».
     
@@ -106,7 +106,7 @@ class User(UserMixin,db.Model):
     того, что счетчик равен 1 или больше 0, фактически эквивалентен. Другие терминаторы запросов, которые вы видели в 
     прошлом, — это all() и first().'''
 
-    def followed_post(self):
+    def followed_posts(self):
         followed = Post.query.join(
             followers,
             (followers.c.followed_id == Post.user_id)).filter(
