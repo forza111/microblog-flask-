@@ -36,6 +36,14 @@ class User(UserMixin,db.Model):
     last_seen = db.Column(db.DateTime, default = datetime.utcnow)
 
 
+    def followed_posts(self):
+        followed = Post.query.join(
+            followers,(followers.c.followed_id == Post.user_id)).filter(
+            followers.c.follower_id == self.id)
+        own = Post.query.filter_by(user_id=self.id)
+        return followed.union(own).order_by(Post.timestamp.desc())
+
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
     '''сообщает Python,как печатать объекты этого класса, что будет полезно для отладки'''
@@ -55,7 +63,17 @@ class User(UserMixin,db.Model):
     поскольку этого требует Gravatar. Затем, конвертирую полученный hash-объект в шестнадцатеричную строку 
     (метод .hexdigest()), прежде чем передавать ее хэш-функции.'''
 
+    def follow(self,user):
+        if not self.is_following(user):
+            self.followed.append(user)
 
+    def unfollow(self,user):
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def is_following(self,user):
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)
