@@ -3,7 +3,7 @@ from app.models import User,Post
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
 
 
 @app.shell_context_processor

@@ -42,6 +42,7 @@ class User(UserMixin,db.Model):
             followers.c.follower_id == self.id)
         own = Post.query.filter_by(user_id=self.id)
         return followed.union(own).order_by(Post.timestamp.desc())
+    '''followed и собственные запросы объединяются в один, до сортировки.'''
 
 
     def __repr__(self):
@@ -74,6 +75,17 @@ class User(UserMixin,db.Model):
     def is_following(self,user):
         return self.followed.filter(
             followers.c.followed_id == user.id).count() > 0
+    '''Методы follow() и unfollow() используют методы append() и remove() объекта, как показано выше, 
+    но прежде чем они будут применены, они используют метод проверки is_following(), чтобы убедиться, 
+    что запрошенное действие обладает смыслом.
+     Метод is_following() формирует запрос на проверку отношения, существует ли связь между двумя 
+     пользователями. 
+    Метод filter(), который я использую здесь, аналогичен, но является более низкоуровневым, поскольку он может 
+    включать произвольные условия фильтрации, в отличие от filter_by(), который может только проверять 
+    равенство на постоянное значение. Условие, которое я использую в is_following(), ищет элементы в таблице 
+    ассоциаций, которые имеют внешний ключ левой стороны, установленный для self пользователя, а правая 
+    сторона — для аргумента user. Запрос завершается методом count(), который возвращает количество записей. 
+    Результатом этого запроса будет 0 или 1,'''
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)
