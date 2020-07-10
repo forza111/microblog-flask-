@@ -1,10 +1,12 @@
 from flask import render_template,flash,redirect,url_for,request
 from app import app,db
-from app.forms import LoginForm,RegistrationForm, EditProfileForm
+from app.forms import LoginForm,RegistrationForm, EditProfileForm,PostForm
 from flask_login import current_user,login_user,logout_user,login_required
-from app.models import User
+from app.models import User,Post
 from werkzeug.urls import url_parse
 from datetime import datetime
+
+
 
 
 @app.before_request
@@ -23,7 +25,13 @@ def before_request():
 @login_required#функция становится защищенной и не разрешает доступ к пользователям, которые не
 # аутентифицированны
 def index():
-    user = {'username': 'Эльдар Рязанов'}
+    form=PostForm()
+    if form.validate_on_submit():
+        post = Post(body = form.post.data, author = current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now life!')
+        return redirect(url_for('index'))
     posts = [
         {
             'author': {'username': 'John'},
@@ -38,7 +46,7 @@ def index():
             'body': 'Какая гадость эта ваша заливная рыба!!'
         }
     ]
-    return render_template('index.html', title='Home', posts=posts)
+    return render_template('index.html', title='Home Page', form=form, posts=posts)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
