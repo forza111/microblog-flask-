@@ -32,8 +32,10 @@ def index():
         db.session.commit()
         flash('Your post is now life!')
         return redirect(url_for('index'))
-    posts = current_user.followed_posts().all()
-    return render_template('index.html', title='Home Page', form=form, posts=posts)
+    page = request.args.get('page',1, type = int)
+    posts = current_user.followed_posts().paginate(page,app.config['POSTS_PER_PAGE'], False)
+    return render_template('index.html', title='Home Page', form=form, posts=posts.items)
+
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -159,5 +161,10 @@ def unfollow(username):
 @app.route('/explore')
 @login_required
 def explore():
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('index.html',title = 'Explore', posts = posts)
+    page = request.args.get('page', 1, type = int)
+    posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'],False)
+    return render_template('index.html',title = 'Explore', posts = posts.items)
+'''В этих изменениях два оба маршрута определяют номер страницы для отображения, либо из аргумента page 
+запроса страницы, либо по умолчанию это 1. Затем используется метод paginate() для извлечения только 
+нужной страницы с результатами. Элемент конфигурации POSTS_PER_PAGE, который определяет размер страницы, 
+доступен через объект app.config.'''
