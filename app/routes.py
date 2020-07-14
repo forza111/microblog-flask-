@@ -20,32 +20,19 @@ def before_request():
 одном месте. Реализация просто проверяет, зарегистрирован ли current_user, и в этом случае устанавливает 
 последнее поле в текущее время"""
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods = ['GET', 'POST'])
+@app.route('/index', methods = ['GET', 'POST'])
 @login_required#функция становится защищенной и не разрешает доступ к пользователям, которые не
 # аутентифицированны
 def index():
-    form=PostForm()
+    form = PostForm()
     if form.validate_on_submit():
-        post = Post(body = form.post.data, author = current_user)
+        post = Post(body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
         flash('Your post is now life!')
         return redirect(url_for('index'))
-    posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        },
-        {
-            'author': {'username': 'Ипполит'},
-            'body': 'Какая гадость эта ваша заливная рыба!!'
-        }
-    ]
+    posts = current_user.followed_posts().all()
     return render_template('index.html', title='Home Page', form=form, posts=posts)
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -168,3 +155,9 @@ def unfollow(username):
     db.session.commit()
     flash('You are not following {}.'.format(username))
     return redirect(url_for('user', username=username))
+
+@app.route('/explore')
+@login_required
+def explore():
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('index.html',title = 'Explore', posts = posts)

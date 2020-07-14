@@ -57,3 +57,8 @@ class EditProfileForm(FlaskForm):
     Это имя пользователя сохраняется как переменная экземпляра и проверяется в методе validate_username(). 
     Если имя пользователя, введенное в форму, совпадает с исходным именем пользователя, то нет причин проверять 
     базу данных на наличие дубликатов.'''
+
+class PostForm(FlaskForm):
+    post = TextAreaField('Say someting', validators=[DataRequired(),
+                                                     Length(min=1, max=140)])
+    submit = SubmitField('Submit')
