@@ -30,7 +30,12 @@
 {% for post in posts %}
     {% include '_post.html' %}
 {% endfor %}
-
+    {% if prev_url %}
+<a href="{{prev_url}}">Never Post</a>
+    {% endif %}
+    {% if next_url %}
+    <a href="{{next_url}}">Older Post</a>
+{% endif %}
 {% endblock %}
 
 </html>
