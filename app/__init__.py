@@ -6,12 +6,15 @@ from flask_login import LoginManager
 import logging
 from logging.handlers import SMTPHandler,RotatingFileHandler
 import os
+from flask_mail import Mail
+
 
 app = Flask(__name__)
 '''name -переменная, переданная в класс Flask, является предопределенной переменной
 Python, которая задается именем модуля, в котором она используется'''
 app.config.from_object(Config)
 '''Flask читает фаил конфигурации и применяет'''
+mail=Mail(app)
 db = SQLAlchemy(app)#объект db представляет БД
 migrate = Migrate(app,db)#объект, который представит механизм миграции
 login = LoginManager(app)
